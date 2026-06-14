@@ -4,17 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>實用立陶宛標準語語法</title>
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css">
 </head>
 <body>
   <div id="app"></div>
   <script>
     window.$docsify = {
       name: '實用立陶宛標準語語法',
-      loadSidebar: true,
-      subMaxLevel: 2
+      subMaxLevel: 3,
+      darklightTheme: {
+        defaultTheme: 'dark',
+        dark: {
+          accent: '#42b983',
+          background: '#1c2129',
+          textColor: '#b4b4b4',
+          codeBackgroundColor: '#252a34',
+          navBackground: '#202531',
+          navColor: '#b4b4b4',
+          linkColor: '#42b983',
+          toogleBackground: '#ffffff'
+        },
+        light: {
+          accent: '#42b983',
+          background: '#ffffff',
+          textColor: '#34495e',
+          codeBackgroundColor: '#f8f8f8',
+          navBackground: '#0C5C89',
+          navColor: '#ffffff',
+          linkColor: '#42b983',
+          toogleBackground: '#091a28'
+        }
+      }
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"></script>
 </body>
 </html>
