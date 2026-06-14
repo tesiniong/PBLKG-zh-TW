@@ -9,10 +9,49 @@
 <body>
   <div id="app"></div>
   <script>
+    function footnotePlugin(hook) {
+      hook.afterEach(function(html) {
+        var definitions = {};
+        var order = [];
+
+        // 第一步：找出並移除腳註定義段落，例如 [^name]: 說明文字
+        html = html.replace(/<p>\[\^([^\]]+)\]:\s*([\s\S]*?)<\/p>/g, function(_, name, text) {
+          if (!definitions[name]) {
+            order.push(name);
+            definitions[name] = text.trim();
+          }
+          return '';
+        });
+
+        // 第二步：建立名稱→編號對應
+        var nameToNum = {};
+        order.forEach(function(name, i) { nameToNum[name] = i + 1; });
+
+        // 第三步：把行內引用 [^name] 換成上標數字連結
+        html = html.replace(/\[\^([^\]]+)\]/g, function(_, name) {
+          var num = nameToNum[name] || '?';
+          return '<sup id="fnref-' + name + '"><a href="#fn-' + name + '">[' + num + ']</a></sup>';
+        });
+
+        // 第四步：在文末加入腳註列表
+        if (order.length > 0) {
+          html += '<hr><section class="footnotes"><ol>';
+          order.forEach(function(name) {
+            html += '<li id="fn-' + name + '">' + definitions[name] +
+                    ' <a href="#fnref-' + name + '" title="返回內文">↩</a></li>';
+          });
+          html += '</ol></section>';
+        }
+
+        return html;
+      });
+    }
+
     window.$docsify = {
       name: '實用立陶宛標準語語法',
       loadSidebar: true,
       subMaxLevel: 3,
+      plugins: [footnotePlugin],
       darklightTheme: {
         defaultTheme: 'dark',
         dark: {
@@ -40,6 +79,5 @@
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/@sy-records/docsify-footnotes/lib/index.min.js"></script>
 </body>
 </html>
