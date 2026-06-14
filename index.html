@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>實用立陶宛標準語語法</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/dist/style.min.css">
+  <style>
+    .footnotes { font-size: 0.9em; }
+    sup.fn-ref a { cursor: pointer; text-decoration: none; }
+    .footnotes a.fn-back { cursor: pointer; text-decoration: none; }
+  </style>
 </head>
 <body>
   <div id="app"></div>
@@ -13,8 +18,6 @@
       hook.afterEach(function(html) {
         var definitions = {};
         var order = [];
-
-        // 第一步：找出並移除腳註定義段落，例如 [^name]: 說明文字
         html = html.replace(/<p>\[\^([^\]]+)\]:\s*([\s\S]*?)<\/p>/g, function(_, name, text) {
           if (!definitions[name]) {
             order.push(name);
@@ -22,28 +25,39 @@
           }
           return '';
         });
-
-        // 第二步：建立名稱→編號對應
         var nameToNum = {};
         order.forEach(function(name, i) { nameToNum[name] = i + 1; });
-
-        // 第三步：把行內引用 [^name] 換成上標數字連結
         html = html.replace(/\[\^([^\]]+)\]/g, function(_, name) {
           var num = nameToNum[name] || '?';
-          return '<sup id="fnref-' + name + '"><a href="#fn-' + name + '">[' + num + ']</a></sup>';
+          var id = encodeURIComponent(name);
+          return '<sup class="fn-ref" id="fnref-' + id + '"><a data-fn="' + id + '">[' + num + ']</a></sup>';
         });
-
-        // 第四步：在文末加入腳註列表
         if (order.length > 0) {
           html += '<hr><section class="footnotes"><ol>';
           order.forEach(function(name) {
-            html += '<li id="fn-' + name + '">' + definitions[name] +
-                    ' <a href="#fnref-' + name + '" title="返回內文">↩</a></li>';
+            var id = encodeURIComponent(name);
+            html += '<li id="fn-' + id + '">' + definitions[name] +
+                    ' <a class="fn-back" data-fnback="' + id + '" title="返回內文">&#8617;</a></li>';
           });
           html += '</ol></section>';
         }
-
         return html;
+      });
+      hook.doneEach(function() {
+        document.querySelectorAll('a[data-fn]').forEach(function(a) {
+          a.onclick = function(e) {
+            e.preventDefault();
+            var t = document.getElementById('fn-' + a.getAttribute('data-fn'));
+            if (t) t.scrollIntoView({ behavior: 'smooth' });
+          };
+        });
+        document.querySelectorAll('a[data-fnback]').forEach(function(a) {
+          a.onclick = function(e) {
+            e.preventDefault();
+            var t = document.getElementById('fnref-' + a.getAttribute('data-fnback'));
+            if (t) t.scrollIntoView({ behavior: 'smooth' });
+          };
+        });
       });
     }
 
@@ -59,9 +73,11 @@
           background: '#1c2129',
           textColor: '#b4b4b4',
           codeBackgroundColor: '#252a34',
-          navBackground: '#202531',
-          navColor: '#b4b4b4',
-          linkColor: '#42b983',
+          borderColor: '#0d2538',
+          sidebarSublink: '#b4b4b4',
+          codeTextColor: '#ffffff',
+          blockQuoteColor: '#858585',
+          highlightColor: '#d22778',
           toogleBackground: '#ffffff'
         },
         light: {
@@ -69,15 +85,17 @@
           background: '#ffffff',
           textColor: '#34495e',
           codeBackgroundColor: '#f8f8f8',
-          navBackground: '#0C5C89',
-          navColor: '#ffffff',
-          linkColor: '#42b983',
+          borderColor: '#eaecef',
+          sidebarSublink: '#505d6b',
+          codeTextColor: '#525252',
+          blockQuoteColor: '#858585',
+          highlightColor: '#0C5C89',
           toogleBackground: '#091a28'
         }
       }
     }
   </script>
-  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/dist/index.min.js"></script>
 </body>
 </html>
