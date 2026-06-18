@@ -49,3 +49,5 @@ ISBN 978-609-07-1115-6（電子版 PDF）
 《語法》依據國家立陶宛語委員會發起的《〈實用立陶宛標準語語法〉編撰》計畫（主持人：Albinas Drukteinis）編寫完成，由「國家語言規範化、使用、教育與推廣」計畫提供資金支持。
 
 ---
+
+原書請見[立陶宛國家語委網站](https://www.vlkk.lt/media/public/file/Leidiniai/Praktin%C4%97_lietuvi%C5%B3_kalbos_gramatika_Epdf.pdf)。
