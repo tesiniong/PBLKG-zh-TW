@@ -90,6 +90,99 @@
     @media (max-width: 600px) {
       .markdown-section { font-size: 16px; }
     }
+
+    /* ---- 圖：金黃樹狀／流程圖（org-chart 巢狀清單，自適應寬度） ----
+       用法：<div class="fig-tree"><ul><li>
+               <div class="fig-node is-head">頂框</div>
+               <ul><li><div class="fig-node">子框</div> …巢狀… </li></ul>
+             </li></ul></div>
+       連接線用 li 的 ::before/::after 邊框繪製；框內可放粗體/斜體/換行。 */
+    .fig-tree, .fig-flow, .fig-col, .fig-cols {
+      --fig-line: #c8922e; --fig-head: #e0a73e; --fig-box: #f0d090; --fig-ink: #3a2a10;
+    }
+    .fig-tree {
+      overflow-x: auto; text-align: center;
+      margin: 1.4em 0; padding-bottom: 6px;
+    }
+    .fig-tree ul {
+      display: inline-flex; justify-content: center; align-items: flex-start;
+      position: relative; margin: 0; padding: 26px 0 0; list-style: none;
+    }
+    .fig-tree > ul { padding-top: 0; }
+    .fig-tree li {
+      list-style: none; margin: 0; padding: 26px 9px 0; position: relative;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    /* 橫向母線 + 往子框的下接線 */
+    .fig-tree li::before, .fig-tree li::after {
+      content: ''; position: absolute; top: 0; right: 50%;
+      width: 50%; height: 26px; border-top: 2px solid var(--fig-line);
+    }
+    .fig-tree li::after { right: auto; left: 50%; border-left: 2px solid var(--fig-line); }
+    /* 獨生子：單一直線（由父層 ul 的 ::before 提供），不畫橫線 */
+    .fig-tree li:only-child::before, .fig-tree li:only-child::after { display: none; }
+    .fig-tree li:only-child { padding-top: 26px; }
+    .fig-tree > ul > li:only-child { padding-top: 0; }
+    /* 兩端不需外側半條橫線；末子的下接線改由 ::before 的 border-right 提供 */
+    .fig-tree li:first-child::before, .fig-tree li:last-child::after { border: 0 none; }
+    .fig-tree li:last-child::before { border-right: 2px solid var(--fig-line); border-radius: 0 6px 0 0; }
+    .fig-tree li:first-child::after { border-radius: 6px 0 0 0; }
+    /* 父框往下到子層母線的直線 */
+    .fig-tree ul ul::before {
+      content: ''; position: absolute; top: 0; left: 50%;
+      width: 0; height: 26px; border-left: 2px solid var(--fig-line);
+    }
+    /* 框（樹狀與流程圖共用） */
+    .fig-node {
+      display: inline-block; box-sizing: border-box; max-width: 230px;
+      background: var(--fig-box); color: var(--fig-ink);
+      border-radius: 5px; padding: 9px 13px; line-height: 1.6;
+      text-align: center; font-size: .86em;
+    }
+    .fig-node.is-head { background: var(--fig-head); font-weight: 700; }
+    .fig-node.al { text-align: left; }
+    .fig-node i { color: var(--fig-ink); }
+
+    /* ---- 流程圖：詞幹＋後綴＝形式（橫向公式，以 ＋／➔ 運算子連接） ---- */
+    .fig-flow {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 10px 14px; margin: 1.4em 0; overflow-x: auto;
+    }
+    .fig-flow .fig-stack {
+      display: inline-flex; flex-direction: column; align-items: center; gap: 9px;
+    }
+    .fig-flow .fig-op {
+      font-size: 1.7em; font-weight: 700; color: var(--fig-line); line-height: 1;
+    }
+    .fig-flow .fig-node { max-width: 340px; }
+    .fig-op { font-size: 1.6em; font-weight: 700; color: var(--fig-line); line-height: 1; }
+
+    /* ---- 直向框列（fig5 格系統、fig9 級系統）與雙欄比較（fig7） ---- */
+    .fig-col {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 9px; margin: 1.4em 0;
+    }
+    .fig-cols {
+      display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;
+      gap: 18px; margin: 1.4em 0;
+    }
+    .fig-cols .fig-col { margin: 0; }
+    .fig-cols .fig-col .fig-node { max-width: 300px; }
+
+    /* 框內若含內容清單，需中和上面的樹狀規則，避免被當成節點 */
+    .fig-tree .fig-node ul, .fig-tree .fig-node ol {
+      display: block; position: static; text-align: left;
+      margin: .35em 0 0; padding-left: 1.4em;
+    }
+    .fig-tree .fig-node li {
+      display: list-item; position: static; align-items: initial;
+      margin: .15em 0; padding: 0;
+    }
+    .fig-tree .fig-node li::before, .fig-tree .fig-node li::after,
+    .fig-tree .fig-node ul::before, .fig-tree .fig-node ul::after { content: none; border: 0; display: none; }
+    @media (max-width: 600px) {
+      .fig-node { font-size: .8em; max-width: 180px; padding: 7px 9px; }
+    }
   </style>
 
   <!-- Optional: for 100% IPA coverage, self-host the full font. Download web/Charis-Regular.woff2 from
