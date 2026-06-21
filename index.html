@@ -327,11 +327,36 @@
       });
     }
 
+    // Plugin 0: fix CJK-adjacent emphasis that marked drops.
+    // marked's emphasis "flanking" test only counts ASCII characters as
+    // punctuation/whitespace. So an italic/bold span whose content starts with
+    // ASCII punctuation (a suffix example like *-ija* / *(i)acija* / **-as**)
+    // sitting directly after a full-width or CJK character (）、「 etc.) is not
+    // recognised as an opener, and the * / ** are printed literally.
+    // Rewrite exactly those cases to explicit <em>/<strong> before marked runs.
+    // The output is byte-identical to what marked emits for *…* / **…**, so the
+    // font/colour styling and the [..]/[^..] afterEach plugins are unaffected.
+    function emphasisFixPlugin(hook) {
+      hook.beforeEach(function(md) {
+        // Bold first, so its ** are consumed before the italic pass.
+        md = md.replace(/([^\x00-\x7F])\*\*([-(][^*\n]*?)\*\*(?!\*)/g, '$1<strong>$2</strong>');
+        md = md.replace(/([^\x00-\x7F])\*([-(][^*\n]*?)\*(?!\*)/g, '$1<em>$2</em>');
+        // Underscore italics are worse next to CJK: marked drops them when the
+        // opening _ follows a CJK char AND when the closing _ precedes one. Just
+        // turn every underscore-emphasis span into <em> so it bypasses marked's
+        // flanking logic entirely. The non-alphanumeric/underscore boundaries
+        // keep this off snake_case, URLs and code; ___hr___ has no inner text so
+        // it is not matched. Inner **bold** is left for marked to render.
+        md = md.replace(/(^|[^A-Za-z0-9_])_([^_\n]+?)_(?![A-Za-z0-9_])/gm, '$1<em>$2</em>');
+        return md;
+      });
+    }
+
     window.$docsify = {
       name: '實用立陶宛標準語語法',
       loadSidebar: true,
       subMaxLevel: 5,
-      plugins: [ipaPlugin, footnotePlugin, uiPlugin],   // ipaPlugin must come before footnotePlugin
+      plugins: [emphasisFixPlugin, ipaPlugin, footnotePlugin, uiPlugin],   // ipaPlugin must come before footnotePlugin
       search: {                                          // full-text search across the whole book
         placeholder: '搜尋全書…',
         noData: '找不到結果',
